@@ -49,12 +49,12 @@ public class Weapon : MonoBehaviour
     }
     private void Update()
     {
-        
+
         weaponDirection = rifleFirePoint.position - transform.position;
         UpdateLaser();
         GetCurrentBullet();
         magazineText.text = currentBullet.currentMagazine.ToString() + "/" + currentBullet.maxMagazine.ToString();
-     
+
     }
     public void Fire(Vector2 aimDirection)
     {
@@ -93,12 +93,12 @@ public class Weapon : MonoBehaviour
         projectileRifle.transform.Rotate(new Vector3(0, 0, random));
         projectileRifle.GetComponent<Rigidbody2D>().AddForce(projectileRifle.transform.up * rifleBullet.speed, ForceMode2D.Impulse);
         cameraController.StartExplosion(rifleBullet.shakingTime, rifleBullet.shakingForce);
-       
+
         GameObject spentBullet = objectPooler.SpawnFromPool("SpentRifleBullet", spentBulletSpawnPosition.position, player.transform.rotation);
         // add randomness to the force whic is applied to spent bullet
-        Vector3 randVec = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1),0);
+        Vector3 randVec = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), 0);
         spentBullet.GetComponent<Rigidbody2D>().AddForce
-            ((spentBullet.transform.position - player.transform.position + randVec).normalized*spentBulletSpeed,ForceMode2D.Impulse);
+            ((spentBullet.transform.position - player.transform.position + randVec).normalized * spentBulletSpeed, ForceMode2D.Impulse);
         // to make the spent bullet more realistic, add random rotation
         random = Random.Range(-75, 75);
         spentBullet.transform.Rotate(new Vector3(0, 0, random));
@@ -112,7 +112,7 @@ public class Weapon : MonoBehaviour
     }
     public IEnumerator ShotgunFire(Vector2 aimDirection)
     {
-        if(shotgunBullet.currentMagazine <= 0)
+        if (shotgunBullet.currentMagazine <= 0)
         {
             StartCoroutine(PlayReloadAnimation(shotgunBullet));
             yield break;
@@ -175,7 +175,8 @@ public class Weapon : MonoBehaviour
         projectileRifle.GetComponent<Rigidbody2D>().AddForce(projectileRifle.transform.up * pistolBullet.speed, ForceMode2D.Impulse);
         cameraController.StartExplosion(pistolBullet.shakingTime, pistolBullet.shakingForce);
 
-        /**/GameObject spentBullet = objectPooler.SpawnFromPool("SpentPistolBullet", spentBulletSpawnPosition.position, player.transform.rotation);
+        /**/
+        GameObject spentBullet = objectPooler.SpawnFromPool("SpentPistolBullet", spentBulletSpawnPosition.position, player.transform.rotation);
         // add randomness to the force whic is applied to spent bullet
         Vector3 randVec = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), 0);
         spentBullet.GetComponent<Rigidbody2D>().AddForce
@@ -249,51 +250,57 @@ public class Weapon : MonoBehaviour
         fireEffectSprite.gameObject.SetActive(false);
     }
     // wait for given seconds then deactivate the given object
-    public IEnumerator Deactivate(GameObject obj,float waitTime)
+    public IEnumerator Deactivate(GameObject obj, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         obj.SetActive(false);
     }
     public IEnumerator PlayReloadAnimation(Bullet bullet)
     {
-        player.animator.SetBool("Reload",true);
+        player.animator.SetBool("Reload", true);
         isReloading = true;
         weaponSelectArea.SetActive(false);
-        if(bullet == shotgunBullet)
+        if (bullet == shotgunBullet)
         {
-
             float remainingBullet = bullet.maxMagazine - bullet.currentMagazine;
-            for(int i = 0; i < remainingBullet; i++)
+            for (int i = 0; i < remainingBullet; i++)
             {
                 audioManager.Play("ShotgunReload");
                 yield return new WaitForSeconds(bullet.reloadTime);
+                bullet.currentMagazine++;
+                if (player.shootingJoystick.shoot)
+                {
+                    break;
+                }
             }
-            
+
         }
-        else if(bullet == pistolBullet)
+        else if (bullet == pistolBullet)
         {
             yield return new WaitForSeconds(bullet.reloadTime / 2);
             audioManager.Play("PistolReload");
             yield return new WaitForSeconds(bullet.reloadTime / 2);
+            bullet.currentMagazine = bullet.maxMagazine;
         }
-        else if(bullet == rifleBullet)
+        else if (bullet == rifleBullet)
         {
             audioManager.Play("RifleReload");
             yield return new WaitForSeconds(bullet.reloadTime);
+            bullet.currentMagazine = bullet.maxMagazine;
         }
         else
         {
             yield return new WaitForSeconds(bullet.reloadTime);
+            bullet.currentMagazine = bullet.maxMagazine;
         }
         isReloading = false;
         weaponSelectArea.SetActive(true);
         player.animator.SetBool("Reload", false);
-        bullet.currentMagazine = bullet.maxMagazine;
     }
     // if there is at least 1 missing bullet, then reload can be made
     public void Reload()
     {
-        if(currentBullet.currentMagazine < currentBullet.maxMagazine && !isReloading)
+        if (currentBullet.currentMagazine < currentBullet.maxMagazine && !isReloading)
         {
             StartCoroutine(PlayReloadAnimation(currentBullet));
         }
@@ -312,7 +319,8 @@ public class Weapon : MonoBehaviour
         else if (weaponType == WeaponTypes.Grenade)
         {
             currentBullet = grenadeBullet;
-        }else if(weaponType == WeaponTypes.Pistol)
+        }
+        else if (weaponType == WeaponTypes.Pistol)
         {
             currentBullet = pistolBullet;
         }
@@ -344,7 +352,7 @@ public class Weapon : MonoBehaviour
             {
                 lineRenderer.positionCount = 2;
                 lineRenderer.SetPosition(0, transform.position);
-                
+
                 lineRenderer.SetPosition(1, hits[i].point);
                 break;
             }
@@ -352,7 +360,7 @@ public class Weapon : MonoBehaviour
     }
     public void ActivateLaser()
     {
-        
+
         if (!isLaserActive)
         {
             isLaserActive = true;

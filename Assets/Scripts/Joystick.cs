@@ -111,6 +111,7 @@ public class Joystick : MonoBehaviour
         joystickVec = Vector2.zero;
         joystick.transform.position = joystickOriginalPos;
         joystickBG.transform.position = joystickOriginalPos;
+        shoot = false;
     }
 
 }
