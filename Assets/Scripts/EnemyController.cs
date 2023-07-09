@@ -112,6 +112,8 @@ public class EnemyController : MonoBehaviour, IPooledObject
         }
         else if (collision.gameObject.tag == "GrenadeBullet")
         {
+
+            Darkness.settings.StartBrightening(0.5f);
             var hitColliders = Physics2D.OverlapCircleAll(collision.transform.position, player.weapon.grenadeBullet.grenadeSplashRange);
             foreach(var hitCollider in hitColliders)
             {
@@ -124,6 +126,7 @@ public class EnemyController : MonoBehaviour, IPooledObject
             }        
         }
     }
+    
     public void GetDamage(float damage)
     {
         audioManager.Play("EnemyGetHit");
