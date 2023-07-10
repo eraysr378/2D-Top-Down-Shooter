@@ -40,11 +40,13 @@ public class PlayerController : MonoBehaviour
     private Vector2 lastBodyDirection;
     public Vector2 currentBodyDirection;
     private float bodyAngle;
+    public float money;
+    [SerializeField] private TMPro.TextMeshProUGUI moneyText;
 
 
     private void Start()
     {
-        
+        money = 0;
         health = maxHealth;
         healthPercentage = health / maxHealth;
         healthBar.SetHealth(healthPercentage);
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         upgradePointsText.text = "upgrade points:" + characterUpgradePoints;
+        moneyText.text = "$" + money;
         IsDead();
         ProcessInputs();
         SetDirection();
@@ -166,14 +169,17 @@ public class PlayerController : MonoBehaviour
     {
         if (enemyType == EnemyType.Normal)
         {
+            money++;
             killedNormalEnemy++;
         }
         else if (enemyType == EnemyType.Fast)
         {
+            money++;
             killedFastEnemy++;
         }
         else if (enemyType == EnemyType.Boss)
         {
+            money++;
             killedBossEnemy++;
         }
     }

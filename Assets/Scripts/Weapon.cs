@@ -39,9 +39,13 @@ public class Weapon : MonoBehaviour
     public LineRenderer lineRenderer;
     public Vector2 weaponDirection;
     public bool isLaserActive = false;
+    public bool isPistolUnlocked = true;
+    public bool isRifleUnlocked = false;
+    public bool isShotgunUnlocked = false;
 
     private void Start()
     {
+
         objectPooler = ObjectPooler.Instance;
         audioManager = FindObjectOfType<AudioManager>();
 
@@ -92,6 +96,8 @@ public class Weapon : MonoBehaviour
         GameObject projectileRifle = objectPooler.SpawnFromPool("RifleBullet", rifleFirePoint.position, player.transform.rotation);
         projectileRifle.transform.Rotate(new Vector3(0, 0, random));
         projectileRifle.GetComponent<Rigidbody2D>().AddForce(projectileRifle.transform.up * rifleBullet.speed, ForceMode2D.Impulse);
+        StartCoroutine(Deactivate(projectileRifle, 2f));
+
         cameraController.StartExplosion(rifleBullet.shakingTime, rifleBullet.shakingForce);
 
         GameObject spentBullet = objectPooler.SpawnFromPool("SpentRifleBullet", spentBulletSpawnPosition.position, player.transform.rotation);
@@ -128,6 +134,8 @@ public class Weapon : MonoBehaviour
             projectileShotgun.transform.Rotate(new Vector3(0, 0, recoil));
             projectileShotgun.GetComponent<Rigidbody2D>().AddForce(projectileShotgun.transform.up * shotgunBullet.speed, ForceMode2D.Impulse);
             recoil += 2 * shotgunBullet.recoil / shotgunBullet.shotgunBulletAmount;
+            StartCoroutine(Deactivate(projectileShotgun, 2f));
+
         }
 
         cameraController.StartExplosion(shotgunBullet.shakingTime, shotgunBullet.shakingForce);
@@ -147,6 +155,10 @@ public class Weapon : MonoBehaviour
     }
     public IEnumerator GrenadeFire(Vector2 aimDirection)
     {
+        if(grenadeBullet.currentMagazine == 0)
+        {
+            yield break;
+        }
         player.animator.SetTrigger("Shoot");
         audioManager.Stop("GrenadeShoot");
         audioManager.Play("GrenadeShoot");
@@ -154,10 +166,16 @@ public class Weapon : MonoBehaviour
         //GameObject projectileGrenade = Instantiate(grenadeBullet.gameObject, firePoint.position, player.transform.rotation);
         //projectileGrenade.SetActive(true);
         projectileGrenade.GetComponent<Rigidbody2D>().AddForce(aimDirection.normalized * grenadeBullet.speed, ForceMode2D.Impulse);
+        grenadeBullet.currentMagazine--;
         // prevent shooting without stopping
         PlayerController.isGrenadeShooting = true;
         yield return new WaitForSeconds(grenadeBullet.spawnTime);
         PlayerController.isGrenadeShooting = false;
+        if(grenadeBullet.maxMagazine > 0)
+        {
+            grenadeBullet.currentMagazine++;
+            grenadeBullet.maxMagazine--;
+        }
     }
     public IEnumerator PistolFire(Vector2 aimDirection)
     {
@@ -170,9 +188,11 @@ public class Weapon : MonoBehaviour
         player.animator.SetTrigger("Shoot");
         audioManager.Play("RifleShoot");/***/
         float random = Random.Range(-1 * pistolBullet.recoil, pistolBullet.recoil);
-        GameObject projectileRifle = objectPooler.SpawnFromPool("PistolBullet", PistolFirePoint.position, player.transform.rotation);
-        projectileRifle.transform.Rotate(new Vector3(0, 0, random));
-        projectileRifle.GetComponent<Rigidbody2D>().AddForce(projectileRifle.transform.up * pistolBullet.speed, ForceMode2D.Impulse);
+        GameObject projectileBullet = objectPooler.SpawnFromPool("PistolBullet", PistolFirePoint.position, player.transform.rotation);
+        projectileBullet.transform.Rotate(new Vector3(0, 0, random));
+        projectileBullet.GetComponent<Rigidbody2D>().AddForce(projectileBullet.transform.up * pistolBullet.speed, ForceMode2D.Impulse);
+        StartCoroutine(Deactivate(projectileBullet, 2f));
+
         cameraController.StartExplosion(pistolBullet.shakingTime, pistolBullet.shakingForce);
 
         /**/
@@ -369,5 +389,27 @@ public class Weapon : MonoBehaviour
         {
             isLaserActive = false;
         }
+    }
+    public void UnlockShotgun()
+    {
+        isShotgunUnlocked = true;
+        player.money -= 10;
+    }
+    public void UnlockRifle()
+    {
+        isRifleUnlocked = true;
+        player.money -= 10;
+    }
+    public void BuyGrenade()
+    {
+        if(grenadeBullet.currentMagazine == 0)
+        {
+            grenadeBullet.currentMagazine++;
+        }
+        else
+        {
+            grenadeBullet.maxMagazine++;
+        }
+        player.money--;
     }
 }

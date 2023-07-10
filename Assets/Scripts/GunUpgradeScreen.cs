@@ -16,50 +16,68 @@ public class GunUpgradeScreen : MonoBehaviour
     public float maxFireRate;
     public float magCapacityUpgradeAmount;
     public float maxMagCapacity;
+    public WeaponTypes weaponType;
+    public GameObject upgradeArea;
+    public Button buyButton;
+    public Button selectButton;
 
     private void Update()
     {
-        if (player.gunUpgradePoints > 0)
+        if (weaponType == WeaponTypes.Shotgun && player.weapon.isShotgunUnlocked ||
+             weaponType == WeaponTypes.Rifle && player.weapon.isRifleUnlocked ||
+             weaponType == WeaponTypes.Pistol && player.weapon.isPistolUnlocked)
         {
-            if (IsDamageUpgradeable())
+            upgradeArea.gameObject.SetActive(true);
+            buyButton.gameObject.SetActive(false);
+            if (player.gunUpgradePoints > 0)
             {
-                upgradeDamageButton.gameObject.SetActive(true);
+                if (IsDamageUpgradeable())
+                {
+                    upgradeDamageButton.gameObject.SetActive(true);
+                }
+                else
+                {
+                    upgradeDamageButton.gameObject.SetActive(false);
+                }
+                if (IsFireRateUpgradeable())
+                {
+                    upgradeFireRateButton.gameObject.SetActive(true);
+
+                }
+                else
+                {
+                    upgradeFireRateButton.gameObject.SetActive(false);
+
+                }
+                if (IsMagCapacityUpgradeable())
+                {
+                    upgradeMagCapacityButton.gameObject.SetActive(true);
+
+                }
+                else
+                {
+                    upgradeMagCapacityButton.gameObject.SetActive(false);
+
+                }
             }
             else
             {
                 upgradeDamageButton.gameObject.SetActive(false);
-            }
-            if (IsFireRateUpgradeable())
-            {
-                upgradeFireRateButton.gameObject.SetActive(true);
-
-            }
-            else
-            {
                 upgradeFireRateButton.gameObject.SetActive(false);
-
-            }
-            if (IsMagCapacityUpgradeable())
-            {
-                upgradeMagCapacityButton.gameObject.SetActive(true);
-
-            }
-            else
-            {
                 upgradeMagCapacityButton.gameObject.SetActive(false);
-
             }
         }
         else
         {
-            upgradeDamageButton.gameObject.SetActive(false);
-            upgradeFireRateButton.gameObject.SetActive(false);
-            upgradeMagCapacityButton.gameObject.SetActive(false);
+            upgradeArea.gameObject.SetActive(false);
+            buyButton.gameObject.SetActive(true);
         }
+
+
     }
     public void UpgradeDamage()
     {
-        
+
         if (IsDamageUpgradeable())
         {
             bullet.damage += damageUpgradeAmount;
@@ -98,5 +116,28 @@ public class GunUpgradeScreen : MonoBehaviour
     {
         player.gunUpgradePoints--;
     }
+    public void BuyRifle()
+    {
+        if (player.money >= 10)
+        {
+            player.weapon.UnlockRifle();
+            selectButton.gameObject.SetActive(true);
+        }
 
+    }
+    public void BuyShotgun()
+    {
+        if (player.money >= 10)
+        {
+            player.weapon.UnlockShotgun();
+            selectButton.gameObject.SetActive(true);
+        }
+    }
+    public void BuyGrenade()
+    {
+        if (player.money >= 1)
+        {
+            player.weapon.BuyGrenade();
+        }
+    }
 }

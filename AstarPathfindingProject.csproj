@@ -59,8 +59,8 @@
     <Compile Include="Assets\AstarPathfindingProject\Core\GraphUpdateScene.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Core\AstarPath.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Generators\Utilities\BBTree.cs" />
-    <Compile Include="Assets\AstarPathfindingProject\Modifiers\SimpleSmoothModifier.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Core\Path.cs" />
+    <Compile Include="Assets\AstarPathfindingProject\Modifiers\SimpleSmoothModifier.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Generators\Utilities\PointKDTree.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Modifiers\AlternativePath.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Generators\Utilities\NavmeshTile.cs" />

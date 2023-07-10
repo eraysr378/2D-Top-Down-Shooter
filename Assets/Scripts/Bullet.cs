@@ -24,6 +24,10 @@ public class Bullet : MonoBehaviour, IPooledObject
     public CameraController cameraController;
     public float damage;
 
+    private void OnEnable()
+    {
+        
+    }
     public void OnObjectSpawn()
     {
         objectPooler = ObjectPooler.Instance;
